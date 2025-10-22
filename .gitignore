@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pytest_cache/
+*.mypy_cache/
+*.coverage
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+.env
+
+# VSCode
+.vscode/
+
+# Docker
+*.log
+*.pid
+*.env.local
+docker-compose.override.yml
+*.db
+*.sqlite3
+
+# MacOS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# Logs
+*.log
