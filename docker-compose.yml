@@ -1,0 +1,12 @@
+
+services:
+  ai-structurizer:
+    build: .
+    container_name: ai_structurizer
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: always
