@@ -1,21 +1,22 @@
 
 # 🧠📊 AI Structurizer
 
-**AI Structurizer** is a lightweight **FastAPI** application that converts **unstructured text** into **structured JSON** using the latest **OpenAI APIs**.
+**AI Structurizer** is a lightweight **FastAPI** application that converts **unstructured text** into **structured JSON** using the latest **OpenAI APIs**.  
 It supports **generic structuring** and **schema-based extraction** (e.g., calendar events or research papers).
 
 ---
 
 ## 🚀 Features
 
-✅ Convert any unstructured text into structured JSON (`/structure/`)
-✅ Extract specific structured data using schemas (`/extract/`)
+✅ Convert any unstructured text into structured JSON (`/structure/`)  
+✅ Extract specific structured data using schemas (`/extract/`)  
 
-* Calendar events
-* Research papers
-  ✅ Built with **FastAPI**, **OpenAI SDK**, and **Pydantic**
-  ✅ Fully **Dockerized** for easy deployment 🐳
-  ✅ Includes **automated test suite** with **pytest** 🧪
+* Calendar events  
+* Research papers  
+✅ Built with **FastAPI**, **OpenAI SDK**, and **Pydantic**  
+✅ Fully **Dockerized** for easy deployment 🐳  
+✅ Includes **automated test suite** with **pytest** 🧪  
+✅ Integrated **CI/CD workflow** via **GitHub Actions** for build, test, and deploy  
 
 ---
 
@@ -31,7 +32,7 @@ It supports **generic structuring** and **schema-based extraction** (e.g., calen
 {
   "text": "John ordered 3 books from Amazon on Friday."
 }
-```
+````
 
 **Response:**
 
@@ -78,7 +79,8 @@ It supports **generic structuring** and **schema-based extraction** (e.g., calen
 
 ## 🧪 Run Tests
 
-You can run all test cases (for both endpoints) using Docker Compose:
+All test cases are executed using Docker Compose with a mocked OpenAI key.
+This ensures CI/CD pipelines can run tests **without real API credentials**.
 
 ```bash
 docker-compose run tests
@@ -93,37 +95,48 @@ tests/test_main.py::test_extract_calendar PASSED
 tests/test_main.py::test_extract_invalid_schema PASSED
 ```
 
-All tests ensure both endpoints work correctly and return valid structured data.
+All tests validate both endpoints and ensure structured data is returned correctly.
 
 ---
 
 ## 🐳 Run with Docker
 
-To build and run the app locally:
+Build and run the app locally:
 
 ```bash
 docker-compose build
 docker-compose up
 ```
 
-Then open your browser at 👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to explore the API interactively.
+Open your browser at 👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to explore the API interactively.
+
+---
+
+## ⚙️ CI/CD Integration
+
+The repository includes a **GitHub Actions workflow** that:
+
+1. Builds the Docker image (`ai-structurizer`)
+2. Runs all test cases inside a Docker container
+3. Tags and pushes the image to **Docker Hub** automatically
+
+This ensures every push to `main` is **tested, validated, and deployed** in a reproducible environment.
 
 ---
 
 ## ⚙️ Requirements
 
 * Python **3.12**
-* **OpenAI API Key** (set in `.env`)
+* **OpenAI API Key** (set in `.env` for local development; tests are mocked)
 * **Docker** and **Docker Compose**
 
 ---
 
 ## ✨ Notes
 
-* Generic `/structure/` endpoint works for **any unstructured input**.
-* `/extract/` endpoint validates output using **Pydantic schemas** for precision.
-* Includes **unit tests** to ensure consistent behavior.
+* `/structure/` endpoint handles **any unstructured text**.
+* `/extract/` endpoint validates structured output via **Pydantic schemas**.
+* Unit tests ensure **consistent behavior** in CI/CD pipelines.
 * Ideal for **data extraction**, **AI preprocessing**, and **automation** workflows.
 
----
-
+```
