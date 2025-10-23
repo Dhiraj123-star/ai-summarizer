@@ -15,38 +15,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # 2️⃣ Set up Python (optional for local tests)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      # 3️⃣ Login to Docker Hub
+      # 3️⃣ Install dependencies and run tests (optional)
+      - name: Install dependencies & run tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pytest -v
+
+      # 4️⃣ Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4️⃣ Build Docker images (API + tests)
-      - name: Build Docker images
-        run: docker compose build
-
-      # 5️⃣ Run tests using Docker Compose (mocked OpenAI)
-      - name: Run tests
-        run: docker compose run --rm tests
-
-      # 6️⃣ Push API Docker image
-      - name: Push Docker image
+      # 5️⃣ Build and push Docker image
+      - name: Build and push Docker image
         run: |
-          # List images to verify the correct service image name
-          docker compose images
-
-          # Tag the API service image for Docker Hub
-          # Replace ai-structurizer_ai-structurizer if folder/service name differs
-          docker tag ai-structurizer_ai-structurizer:latest dhiraj918106/ai-structurizer:latest
-
-          # Push to Docker Hub
+          docker build -t dhiraj918106/ai-structurizer:latest .
           docker push dhiraj918106/ai-structurizer:latest
 
-      # 7️⃣ Success message
+      # 6️⃣ Success message
       - name: Deployment success
-        run: echo "✅ Successfully built, tested, and pushed ai-structurizer to Docker Hub!"
+        run: echo "✅ Successfully built and pushed ai-structurizer to Docker Hub!"
