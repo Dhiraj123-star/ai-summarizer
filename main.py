@@ -7,7 +7,10 @@ from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def get_openai_client():
+    # Lazy initialization of OpenAI client
+    return OpenAI(api_key=os.getenv("OPENAI_API_KEY", "test-key"))
 
 app = FastAPI(
     title="AI Structurizer",
@@ -25,15 +28,11 @@ app = FastAPI(
 # ----------------------------
 @app.post("/structure/")
 async def structured_data(data: dict = Body(...)):
-    """
-    Accepts raw or unstructured text (from user, API, etc.)
-    and returns structured JSON representation.
-    """
     text_input = data.get("text", "").strip()
-
     if not text_input:
         return {"error": "No input text provided."}
 
+    client = get_openai_client()
     try:
         completion = client.chat.completions.create(
             model="gpt-4.1-mini",
@@ -52,10 +51,8 @@ async def structured_data(data: dict = Body(...)):
             temperature=0,
         )
 
-        # Extract text from response
         message = completion.choices[0].message.content.strip()
 
-        # Try to parse the JSON returned by the model
         try:
             parsed_output = json.loads(message)
         except json.JSONDecodeError:
@@ -65,7 +62,6 @@ async def structured_data(data: dict = Body(...)):
 
     except Exception as e:
         return {"error": str(e)}
-
 
 # ----------------------------
 # Pydantic Schemas
@@ -82,37 +78,33 @@ class ResearchPaperExtraction(BaseModel):
     abstract: str
     keywords: list[str]
 
-
 # ----------------------------
-# Endpoint 2: Structured Extraction (Responses API)
+# Endpoint 2: Structured Extraction
 # ----------------------------
 @app.post("/extract/")
 async def extract_structured(data: dict = Body(...)):
-    """
-    Extract structured data (Calendar Event or Research Paper)
-    using OpenAI Responses API with schema validation.
-    """
     text_input = data.get("text", "").strip()
     schema_type = data.get("schema", "calendar").lower()
 
     if not text_input:
         return {"error": "No input text provided."}
 
-    try:
-        if schema_type == "calendar":
-            schema_model = CalendarEvent
-            system_prompt = "Extract the event information."
-        elif schema_type == "research":
-            schema_model = ResearchPaperExtraction
-            system_prompt = (
-                "You are an expert at structured data extraction. "
-                "You will be given unstructured text from a research paper "
-                "and should convert it into the given structure."
-            )
-        else:
-            return {"error": "Invalid schema type. Use 'calendar' or 'research'."}
+    client = get_openai_client()
 
-        # Use Responses API for structured output
+    if schema_type == "calendar":
+        schema_model = CalendarEvent
+        system_prompt = "Extract the event information."
+    elif schema_type == "research":
+        schema_model = ResearchPaperExtraction
+        system_prompt = (
+            "You are an expert at structured data extraction. "
+            "You will be given unstructured text from a research paper "
+            "and should convert it into the given structure."
+        )
+    else:
+        return {"error": "Invalid schema type. Use 'calendar' or 'research'."}
+
+    try:
         response = client.responses.parse(
             model="gpt-4o-2024-08-06",
             input=[
