@@ -34,11 +34,22 @@ jobs:
       - name: Run tests
         run: docker compose run --rm tests
 
-      # 6️⃣ Build and push API Docker image
-      - name: Push API Docker image
+      # 6️⃣ Get built image ID and push
+      - name: Tag and push Docker image
         run: |
-          docker compose build ai-structurizer
-          docker tag ai-structurizer:latest dhiraj918106/ai-structurizer:latest
+          # Get the image ID of the built service
+          IMAGE_ID=$(docker compose images -q ai-structurizer)
+          
+          # Check if IMAGE_ID is not empty
+          if [ -z "$IMAGE_ID" ]; then
+            echo "❌ Error: No image built for ai-structurizer"
+            exit 1
+          fi
+
+          # Tag the image for Docker Hub
+          docker tag $IMAGE_ID dhiraj918106/ai-structurizer:latest
+
+          # Push to Docker Hub
           docker push dhiraj918106/ai-structurizer:latest
 
       # 7️⃣ Deployment success message
