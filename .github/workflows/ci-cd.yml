@@ -39,8 +39,8 @@ jobs:
       - name: Build and tag Docker image
         run: |
           docker compose build ai-structurizer
-          docker tag $(docker compose images ai-structurizer --quiet) dhiraj918106/ai-structurizer:latest
-          docker tag $(docker compose images ai-structurizer --quiet) dhiraj918106/ai-structurizer:v1.0.0
+          docker tag ai-structurizer:latest dhiraj918106/ai-structurizer:latest
+          docker tag ai-structurizer:latest dhiraj918106/ai-structurizer:v1.0.0
 
       # 6️⃣ Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
